@@ -4,15 +4,18 @@ from .models import Student
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login,logout
 from django.contrib.auth.models import User
+from .forms import StudentForm
+
+
 def home(request):
     return HttpResponse("Hello!")
 
 def profile(request):
     student = Student.objects.get(id=1)
     context = {
-        'student': student       # pass the whole object
+        'student': student       
     }
-    return render(request, 'profile.html', context)
+    return render(request, 'accounts/profile.html', context)
 
 from django.contrib.auth.models import User
 
@@ -33,7 +36,7 @@ def register(request):
     else:
         form = UserCreationForm()
     
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -45,9 +48,20 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form})
 
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+def add_student(request):
+    if request.method == 'POST':
+        form = StudentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = StudentForm()
+    
+    return render(request, 'accounts/add_student.html', {'form': form})
 
